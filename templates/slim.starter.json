@@ -1,0 +1,58 @@
+{
+  "$schema": "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json",
+  "preset": "free",
+  "disabled_agents": [],
+  "presets": {
+    "free": {
+      "orchestrator": {
+        "model": [
+          "opencode/muse-spark-1.3-contributor-free",
+          "opencode/nemotron-3-ultra-free"
+        ],
+        "variant": "high",
+        "skills": ["*"],
+        "mcps": ["*", "!context7"]
+      },
+      "oracle": {
+        "model": "kilo/nvidia/nemotron-3-super-120b-a12b:free",
+        "variant": "max",
+        "skills": ["simplify"],
+        "mcps": []
+      },
+      "explorer": {
+        "model": "opencode/nemotron-3.5-lightning-free",
+        "skills": [],
+        "mcps": []
+      },
+      "librarian": {
+        "model": "opencode/nemotron-3.5-lightning-free",
+        "skills": [],
+        "mcps": ["context7", "gh_grep"]
+      },
+      "designer": {
+        "model": "kilo/nex-agi/nex-n2.5-pro:free",
+        "variant": "medium",
+        "skills": [],
+        "mcps": []
+      },
+      "fixer": {
+        "model": "opencode/muse-spark-1.3-contributor-free",
+        "variant": "high",
+        "skills": [],
+        "mcps": []
+      },
+      "observer": {
+        "model": "opencode/mimo-v2.5-free",
+        "variant": "low",
+        "skills": [],
+        "mcps": []
+      },
+      "council": {
+        "model": "opencode/nemotron-3-ultra-free",
+        "variant": "high",
+        "skills": [],
+        "mcps": []
+      }
+    }
+  }
+}
