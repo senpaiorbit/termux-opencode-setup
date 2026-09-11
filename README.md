@@ -15,14 +15,19 @@
 termux-opencode-setup/
 ├── README.md                      # this guide
 ├── configs/
-│   ├── oh-my-opencode-slim.json   # working single "free" preset (Zen 70% / Kilo 30%)
+│   ├── oh-my-opencode-slim.json   # 3 working presets: free, opencode-free, kilo-free
 │   └── opencode.json.example      # sanitized opencode.json (GitHub + Playwright MCPs)
+├── templates/
+│   ├── opencode.starter.json      # minimal opencode.json starter (cat-ready)
+│   └── slim.starter.json          # minimal slim preset starter (cat-ready)
 ├── mcp/
 │   ├── playwright-mcp-wrapper.cjs # Termux platform-spoof launcher for @playwright/mcp
 │   └── chrome-mcp.sh              # idempotent headless-Chrome launcher (CDP :9222)
 └── skills/
     └── SKILLS.md                  # extra skills manifest + install commands
 ```
+
+Fast bootstrap from these templates: see §59.
 
 ---
 
@@ -725,8 +730,14 @@ This guide deliberately does not require DeepSeek.
 
 # 18. Recommended role strategy
 
-The working preset in `configs/oh-my-opencode-slim.json` uses one
-combined `free` preset: 5 of 7 agents on Zen (~70%), 2 on Kilo (~30%).
+`configs/oh-my-opencode-slim.json` ships three presets (switch at
+runtime with `/preset`):
+
+- `free` (active) — mixed: 5 of 7 agents on Zen (~70%), 2 on Kilo (~30%)
+- `opencode-free` — 100% Zen free models
+- `kilo-free` — 100% Kilo free models
+
+The `free` preset assignments:
 
 ## Orchestrator
 
@@ -759,11 +770,13 @@ Purpose:
 - Code review
 - Hard decisions
 
-Configured:
+`free` preset:
 
 ```text
 kilo/nvidia/nemotron-3-super-120b-a12b:free (variant: max)
 ```
+
+`opencode-free` preset: `opencode/big-pickle` (variant: max).
 
 ---
 
@@ -776,11 +789,13 @@ Purpose:
 - Finding files
 - Lightweight reasoning
 
-Configured:
+Configured (`free` / `opencode-free`):
 
 ```text
 opencode/nemotron-3.5-lightning-free
 ```
+
+`kilo-free` preset: `kilo/nvidia/nemotron-3.5-lightning:free`.
 
 ---
 
@@ -793,11 +808,7 @@ Purpose:
 - MCP use
 - Research
 
-Configured:
-
-```text
-opencode/nemotron-3.5-lightning-free (+ context7, gh_grep MCPs)
-```
+Configured: same fast model as Explorer (+ context7, gh_grep MCPs).
 
 ---
 
@@ -810,11 +821,13 @@ Purpose:
 - Front-end implementation
 - Visual reasoning where supported
 
-Configured:
+`free` / `kilo-free` presets:
 
 ```text
 kilo/nex-agi/nex-n2.5-pro:free (variant: medium)
 ```
+
+`opencode-free` preset: `opencode/mimo-v2.5-free` (variant: medium).
 
 ---
 
@@ -827,11 +840,14 @@ Purpose:
 - Repairing broken code
 - Test failures
 
-Configured:
+`free` / `opencode-free` presets:
 
 ```text
 opencode/muse-spark-1.3-contributor-free (variant: high)
 ```
+
+`kilo-free` preset: `kilo/poolside/laguna-s-2.1:free`
+(code-specialized, variant: high).
 
 ---
 
@@ -841,11 +857,9 @@ Purpose:
 
 - Read-only visual analysis (images, screenshots, PDFs)
 
-Configured:
-
-```text
-opencode/mimo-v2.5-free (variant: low)
-```
+`free` / `opencode-free` presets: `opencode/mimo-v2.5-free`
+(variant: low). `kilo-free` preset:
+`kilo/inclusionai/ling-3.0-flash-vl:free` (vision-language).
 
 Enabled via `"disabled_agents": []`.
 
@@ -860,11 +874,8 @@ Purpose:
 - Design debate
 - Architecture validation
 
-Council agent:
-
-```text
-opencode/nemotron-3-ultra-free
-```
+Council agent: Zen flagship in `free`/`opencode-free`, Kilo Ultra 550B
+in `kilo-free`.
 
 Councillors (`free-diverse` preset, mixed providers for consensus):
 
@@ -910,6 +921,8 @@ This setup uses two fallback mechanisms:
 /preset
 ```
 
+(`free` → `opencode-free` → `kilo-free` if one provider has issues.)
+
 Always check the installed schema before assuming a field accepts an
 array:
 
@@ -921,8 +934,8 @@ cat ~/omo-slim-test/package/oh-my-opencode-slim.schema.json
 
 # 20. Example OmO preset structure
 
-The working preset is in `configs/oh-my-opencode-slim.json`.
-A safe baseline structure is:
+All three working presets (`free`, `opencode-free`, `kilo-free`) are in
+`configs/oh-my-opencode-slim.json`. A safe baseline structure is:
 
 ```json
 {
@@ -1131,7 +1144,7 @@ Only enable experimental features if you actually need them.
 
 # 24. Desktop Companion
 
-Do not install the desktop Companion on Android/Termux unless you have a
+Do not install the desktop Companion on Termux unless you have a
 specific supported workflow for it.
 
 Use:
@@ -1772,7 +1785,7 @@ Clean apt cache:
 
 ```bash
 apt clean
-autoclean
+apt autoclean
 ```
 
 Do not run aggressive deletion against OpenCode configuration.
@@ -2299,6 +2312,111 @@ CDP already responds). Hook it into `~/.bashrc`:
 
 Optional: with the Termux:Boot app, copy the same script to
 `~/.termux/boot/` to start Chrome at device boot.
+
+---
+
+# 59. Starter templates (copy-paste with `cat`)
+
+The `templates/` directory holds minimal starters. Write them with
+heredocs — no editor needed.
+
+Minimal `opencode.json`:
+
+```bash
+cat > ~/.config/opencode/opencode.json << 'EOF'
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "~/.config/opencode/local-plugins/oh-my-opencode-slim"
+  ],
+  "agent": {
+    "explore": { "disable": true },
+    "general": { "disable": true }
+  },
+  "lsp": true
+}
+EOF
+```
+
+Minimal slim preset (mixed free models, same as `templates/slim.starter.json`):
+
+```bash
+cat > ~/.config/opencode/oh-my-opencode-slim.json << 'EOF'
+{
+  "$schema": "https://unpkg.com/oh-my-opencode-slim@latest/oh-my-opencode-slim.schema.json",
+  "preset": "free",
+  "disabled_agents": [],
+  "presets": {
+    "free": {
+      "orchestrator": {
+        "model": [
+          "opencode/muse-spark-1.3-contributor-free",
+          "opencode/nemotron-3-ultra-free"
+        ],
+        "variant": "high",
+        "skills": ["*"],
+        "mcps": ["*", "!context7"]
+      },
+      "oracle": {
+        "model": "kilo/nvidia/nemotron-3-super-120b-a12b:free",
+        "variant": "max",
+        "skills": ["simplify"],
+        "mcps": []
+      },
+      "explorer": {
+        "model": "opencode/nemotron-3.5-lightning-free",
+        "skills": [],
+        "mcps": []
+      },
+      "librarian": {
+        "model": "opencode/nemotron-3.5-lightning-free",
+        "skills": [],
+        "mcps": ["context7", "gh_grep"]
+      },
+      "designer": {
+        "model": "kilo/nex-agi/nex-n2.5-pro:free",
+        "variant": "medium",
+        "skills": [],
+        "mcps": []
+      },
+      "fixer": {
+        "model": "opencode/muse-spark-1.3-contributor-free",
+        "variant": "high",
+        "skills": [],
+        "mcps": []
+      },
+      "observer": {
+        "model": "opencode/mimo-v2.5-free",
+        "variant": "low",
+        "skills": [],
+        "mcps": []
+      },
+      "council": {
+        "model": "opencode/nemotron-3-ultra-free",
+        "variant": "high",
+        "skills": [],
+        "mcps": []
+      }
+    }
+  }
+}
+EOF
+```
+
+Validate, then restart OpenCode:
+
+```bash
+node -e "JSON.parse(require('fs').readFileSync(process.env.HOME+'/.config/opencode/oh-my-opencode-slim.json','utf8')); console.log('valid JSON')"
+```
+
+Prefer files over heredocs? Pull them straight from this repo:
+
+```bash
+curl -sL -o ~/.config/opencode/oh-my-opencode-slim.json \
+  https://raw.githubusercontent.com/senpaiorbit/termux-opencode-setup/main/configs/oh-my-opencode-slim.json
+curl -sL -o /tmp/opencode.json.example \
+  https://raw.githubusercontent.com/senpaiorbit/termux-opencode-setup/main/configs/opencode.json.example
+```
 
 ---
 
