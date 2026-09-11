@@ -9,6 +9,17 @@
 > free models, safe fallbacks, MCPs, agents, LSP, and recovery
 > instructions.
 
+## ⚡ Use it now — one command
+
+```bash
+curl -sL https://raw.githubusercontent.com/senpaiorbit/termux-opencode-setup/main/templates/quickstart.sh | bash
+```
+
+Backs up your current configs, installs the starter `opencode.json` +
+the 3-preset slim config (`free`, `opencode-free`, `kilo-free`),
+validates JSON. Then restart OpenCode and switch presets with
+`/preset`.
+
 ## What's in this repo
 
 ```text
@@ -18,6 +29,7 @@ termux-opencode-setup/
 │   ├── oh-my-opencode-slim.json   # 3 working presets: free, opencode-free, kilo-free
 │   └── opencode.json.example      # sanitized opencode.json (GitHub + Playwright MCPs)
 ├── templates/
+│   ├── quickstart.sh              # one-shot bootstrap (curl ... | bash)
 │   ├── opencode.starter.json      # minimal opencode.json starter (cat-ready)
 │   └── slim.starter.json          # minimal slim preset starter (cat-ready)
 ├── mcp/
@@ -2417,6 +2429,9 @@ curl -sL -o ~/.config/opencode/oh-my-opencode-slim.json \
 curl -sL -o /tmp/opencode.json.example \
   https://raw.githubusercontent.com/senpaiorbit/termux-opencode-setup/main/configs/opencode.json.example
 ```
+
+> **Note:** `/tmp` does not exist on stock Android — use
+> `$PREFIX/tmp` instead if you need a temp dir on Termux.
 
 ---
 
